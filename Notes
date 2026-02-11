@@ -1,0 +1,31 @@
+docker compose logs alloy --tail=30
+
+
+sleep 30 && curl -s http://localhost:3100/loki/api/v1/labels | jq
+
+curl -G -s "http://localhost:3100/loki/api/v1/query_range" \
+  --data-urlencode 'query={container_name="loki"}' \
+  --data-urlencode 'limit=5' | jq '.data.result'
+
+##APP
+docker compose build sample-app && docker compose up -d sample-app
+
+docker compose ps sample-app && curl http://localhost:5000/
+
+  for i in {1..5}; do
+  curl -s http://localhost:5000/generate-logs
+  sleep 2
+done
+
+sleep 15 && curl -G -s 'http://localhost:3100/loki/api/v1/query_range' \
+  --data-urlencode 'query={container_name="sample-app"}' \
+  --data-urlencode 'limit=10' | jq '.data.result'
+
+
+##Query 
+{container_name="sample-app", extracted_level="ERROR"} 
+
+rate(http_requests_total[5m])
+
+##Data links
+ /explore?left={"datasource":"Loki","queries":[{"expr":"{container_name=\"sample-app\"}"}],"range":{"from":"${__from}","to":"${__to}"}}
