@@ -1,0 +1,37 @@
+
+// 1. Configure the Faro Receiver
+faro.receiver "frontend" {
+    extra_log_labels = {
+        "source" = "faro",
+        "app" = "faro-lab-app",
+    }
+
+    server {
+        listen_address = "0.0.0.0"
+        listen_port = 12347
+        cors_allowed_origins = ["*"] // Allow local React app
+        api_key = "secret" // Optional, can be arbitrary for local lab
+    }
+
+    output {
+        logs   = [loki.write.local.receiver]
+        traces = [otelcol.exporter.otlp.local.input]
+    }
+}
+
+// 2. Send Logs to Loki
+loki.write "local" {
+    endpoint {
+        url = "http://loki:3100/loki/api/v1/push"
+    }
+}
+
+// 3. Send Traces to Tempo
+otelcol.exporter.otlp "local" {
+    client {
+        endpoint = "tempo:4317"
+        tls {
+            insecure = true
+        }
+    }
+}

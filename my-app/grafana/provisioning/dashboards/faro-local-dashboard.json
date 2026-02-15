@@ -1,0 +1,114 @@
+{
+  "id": null,
+  "uid": "faro-local-logs",
+  "title": "Faro Local Signals",
+  "tags": ["faro", "local", "loki"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "editable": true,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "logs",
+      "title": "Faro Manual Test Logs",
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "cfdc385m938qoe"
+      },
+      "targets": [
+        {
+          "expr": "{source=\"faro\"} |= \"Manual Faro test log\"",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true,
+        "enableLogDetails": true
+      }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Faro Log Rate",
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "datasource": {
+        "type": "loki",
+        "uid": "cfdc385m938qoe"
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({source=\"faro\"} |= \"Manual Faro test log\" [1m]))",
+          "legendFormat": "logs/min",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "traces",
+      "title": "Faro Traces (Tempo)",
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "datasource": {
+        "type": "tempo",
+        "uid": "P8D6546721A1D106C"
+      },
+      "targets": [
+        {
+          "queryType": "traceqlSearch",
+          "query": "{}",
+          "limit": 20,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showSpanBar": true,
+        "showTraceName": true,
+        "showDuration": true
+      }
+    }
+  ]
+}
