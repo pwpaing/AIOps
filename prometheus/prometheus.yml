@@ -38,3 +38,12 @@ scrape_configs:
           service: 'sample-app'
           container_name: 'sample-app'
           app: 'sample-flask'
+
+  # Scrape Alloy (internal debug metrics)
+  - job_name: 'alloy'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['alloy:12345']
+        labels:
+          service: 'alloy'
+          container_name: 'alloy'
